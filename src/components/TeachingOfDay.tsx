@@ -86,8 +86,10 @@ const TeachingOfDay = () => {
   }, []);
 
   useEffect(() => {
-    fetchNewTeaching();
-  }, [lastClickTime]);
+    if(verseQueue.length < 7) {
+      fetchNewTeaching();
+    }
+  }, [verseQueue]);
 
   const fetchNewTeaching = async () => {
     try {
@@ -105,7 +107,7 @@ const TeachingOfDay = () => {
     const currentTime = Date.now();
     const timeSinceLastClick = currentTime - lastClickTime;
     
-    if (timeSinceLastClick < 3000) {
+    if (timeSinceLastClick < 3000 && verseQueue.length < 7) {
       setShowSlowDown(true);
       return;
     }
