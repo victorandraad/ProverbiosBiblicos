@@ -50,12 +50,49 @@ const InteractiveLoading = () => {
   );
 };
 
+const ShareButton = ({ verse, reference, onClose }: { verse: string, reference: string, onClose: () => void }) => {
+  const shareMessages = [
+    "💚 Este versículo tocou meu coração e quero compartilhar com você",
+    "✨ Esta palavra de sabedoria chegou na hora certa",
+    "🙏 Uma mensagem que pode abençoar seu dia",
+    "💫 Compartilhando uma palavra que me trouxe paz",
+    "🌟 Este versículo me fez refletir, espero que toque você também"
+  ];
+
+  const randomMessage = shareMessages[Math.floor(Math.random() * shareMessages.length)];
+  
+  const verseText = `${randomMessage}\n\n"${verse}"\n\n${reference}\n\n📖 Provérbios Bíblicos`;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(verseText)}`;
+
+  return (
+    <div className="share-button-container">
+      <div className="share-button-content">
+        <div className="share-heart-icon">💚</div>
+        <p className="share-message">Compartilhe esta palavra e abençoe alguém hoje!</p>
+        <a 
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="share-whatsapp-btn"
+        >
+          <span className="whatsapp-icon">📱</span>
+          Compartilhar no WhatsApp
+        </a>
+        <button className="share-close-btn" onClick={onClose}>
+          Talvez depois
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const TeachingOfDay = () => {
   const [todaysTeaching, setTodaysTeaching] = useState<BibleVerse | null>(null);
   const [verseQueue, setVerseQueue] = useState<BibleVerse[]>([]);
   const [lastClickTime, setLastClickTime] = useState<number>(Date.now());
   const [isLoading, setIsLoading] = useState(true);
   const [showSlowDown, setShowSlowDown] = useState<boolean>(false);
+  const [showShareButton, setShowShareButton] = useState<boolean>(false);
 
   const loadInitialVerses = async () => {
     setIsLoading(true);
@@ -91,6 +128,22 @@ const TeachingOfDay = () => {
     }
   }, [verseQueue]);
 
+  // Mostra botão de compartilhar após 3-5 segundos (randomizado)
+  useEffect(() => {
+    if (!todaysTeaching) return;
+
+    setShowShareButton(false);
+    
+    // Randomiza entre 3 e 5 segundos
+    const randomDelay = Math.floor(Math.random() * 2000) + 3000; // 3000-5000ms
+    
+    const timer = setTimeout(() => {
+      setShowShareButton(true);
+    }, randomDelay);
+
+    return () => clearTimeout(timer);
+  }, [todaysTeaching]);
+
   const fetchNewTeaching = async () => {
     try {
       const bibleVerses = await getMultipleBibleVerses(2);
@@ -111,6 +164,9 @@ const TeachingOfDay = () => {
       setShowSlowDown(true);
       return;
     }
+    
+    // Esconde botão de compartilhar ao mudar versículo
+    setShowShareButton(false);
     
     if (verseQueue.length > 0) {
       setLastClickTime(currentTime);
@@ -146,6 +202,13 @@ const TeachingOfDay = () => {
   return (
     <>
       {showSlowDown && <SlowDownMessage onClose={() => setShowSlowDown(false)} />}
+      {showShareButton && (
+        <ShareButton 
+          verse={verseText} 
+          reference={todaysTeaching.reference}
+          onClose={() => setShowShareButton(false)}
+        />
+      )}
       
       <div className="teaching-container">
         <div className="verse-header">
