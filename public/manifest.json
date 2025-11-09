@@ -1,7 +1,7 @@
 {
-  "short_name": "Provérbios",
-  "name": "Provérbios Bíblicos - Ensinamentos e Sabedoria",
-  "description": "Leia provérbios bíblicos, versículos e ensinamentos de sabedoria diariamente",
+  "short_name": "Palavra de Deus",
+  "name": "Palavra de Deus Diária - Versículos Bíblicos e Ensinamentos Cristãos",
+  "description": "Receba diariamente versículos bíblicos, provérbios e ensinamentos cristãos. Palavra de Deus para fortalecer sua fé",
   "icons": [
     {
       "src": "favicon.ico",
@@ -24,5 +24,5 @@
   "theme_color": "#333333",
   "background_color": "#f5f5f5",
   "orientation": "portrait-primary",
-  "categories": ["education", "lifestyle", "books"]
+  "categories": ["education", "lifestyle", "books", "religion", "spirituality"]
 }
