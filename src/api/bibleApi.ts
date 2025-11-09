@@ -117,7 +117,7 @@ async function getCompleteVerseWithRetry(chapter: number, verse: number, retries
     throw new Error('Não foi possível buscar versículo após várias tentativas');
 }
 
-export async function getMultipleBibleVerses(count: number = 3): Promise<BibleVerse[]> {
+export async function getMultipleBibleVerses(count: number = 1): Promise<BibleVerse[]> {
     const promises: Promise<BibleVerse>[] = [];
     
     for (let i = 0; i < count; i++) {

@@ -16,7 +16,6 @@
     "axios": "^1.13.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-scripts": "^0.0.0",
     "svgo": "^3.3.2",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
@@ -44,5 +43,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.1"
   }
 }

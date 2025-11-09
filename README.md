@@ -37,13 +37,6 @@ A aplicação estará disponível em `http://localhost:3000`
 npm run build
 ```
 
-## 📝 Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto:
-
-```
-REACT_APP_GEMINI_API_KEY=sua_chave_api_aqui
-```
 
 ## 🌐 Deploy
 
