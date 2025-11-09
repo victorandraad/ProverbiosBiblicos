@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { BibleVerse } from '../models/BibleVerse';
 import { getMultipleBibleVerses } from '../api/bibleApi';
 import './TeachingOfDay.css';
-import { defaultProverbs } from '../data/defaultProverbs';
+import { defaultProverbs, shuffleArray } from '../data/defaultProverbs';
 
 const SlowDownMessage = ({ onClose }: { onClose: () => void }) => {
   useEffect(() => {
@@ -24,28 +24,88 @@ const SlowDownMessage = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
+const InteractiveLoading = () => {
+  const [loadingText, setLoadingText] = useState('Buscando palavra de sabedoria');
+  const dotsRef = useRef(0);
+
+  useEffect(() => {
+    setInterval(() => {
+      dotsRef.current = (dotsRef.current + 1) % 4;
+      const dots = '.'.repeat(dotsRef.current);
+      setLoadingText(`Buscando palavra de sabedoria${dots}`);
+    }, 500);
+
+    return;
+  }, []);
+
+  return (
+    <div className="loading-container interactive-loading">
+      <div className="loading-animation">
+        <div className="loading-book">📖</div>
+        <div className="loading-pulse"></div>
+      </div>
+      <p className="loading-text">{loadingText}</p>
+      <p className="loading-subtitle">Aguarde enquanto buscamos versículos especiais para você...</p>
+    </div>
+  );
+};
+
 const TeachingOfDay = () => {
-  const [todaysTeaching, setTodaysTeaching] = useState<BibleVerse | null>(defaultProverbs[0]);
-  const [verseQueue, setVerseQueue] = useState<BibleVerse[]>(defaultProverbs.slice(1));
-  const [lastClickTime, setLastClickTime] = useState<number>(new Date().getSeconds());
-  const [isLoading, setIsLoading] = useState(false);
+  const [todaysTeaching, setTodaysTeaching] = useState<BibleVerse | null>(null);
+  const [verseQueue, setVerseQueue] = useState<BibleVerse[]>([]);
+  const [lastClickTime, setLastClickTime] = useState<number>(Date.now());
+  const [isLoading, setIsLoading] = useState(true);
   const [showSlowDown, setShowSlowDown] = useState<boolean>(false);
 
-  const fetchNewTeaching = async () => {
-    const bibleVerses = await getMultipleBibleVerses(2);
-    setVerseQueue(prev => [...prev, ...bibleVerses]);
+  const loadInitialVerses = async () => {
+    setIsLoading(true);
+    
+    try {
+      const [fetch1, fetch2] = await Promise.all([
+        getMultipleBibleVerses(1),
+        getMultipleBibleVerses(1)
+      ]);
+      
+      const allVerses = [...defaultProverbs, ...fetch1, ...fetch2];
+      const shuffledVerses = shuffleArray(allVerses);
+      
+      setTodaysTeaching(shuffledVerses[0]);
+      setVerseQueue(shuffledVerses.slice(1));
+    } catch (err) {
+      console.warn('Erro ao carregar versículos, usando apenas padrões:', err);
+      const shuffledDefault = shuffleArray(defaultProverbs);
+      setTodaysTeaching(shuffledDefault[0]);
+      setVerseQueue(shuffledDefault.slice(1));
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    loadInitialVerses();
+  }, []);
 
   useEffect(() => {
     fetchNewTeaching();
   }, [lastClickTime]);
 
+  const fetchNewTeaching = async () => {
+    try {
+      const bibleVerses = await getMultipleBibleVerses(2);
+      setVerseQueue(prev => {
+        const newQueue = [...prev, ...bibleVerses];
+        return shuffleArray(newQueue);
+      });
+    } catch (err) {
+      console.warn('Erro ao buscar novos versículos:', err);
+    }
+  };
+
   const handleNextVerse = async () => {
-    const currentTime = new Date().getSeconds();
-    console.log(currentTime, lastClickTime);
+    const currentTime = Date.now();
     const timeSinceLastClick = currentTime - lastClickTime;
     
-    if (timeSinceLastClick < 5) {
+    if (timeSinceLastClick < 3000) {
       setShowSlowDown(true);
       return;
     }
@@ -53,7 +113,10 @@ const TeachingOfDay = () => {
     if (verseQueue.length > 0) {
       setLastClickTime(currentTime);
       setTodaysTeaching(verseQueue[0]);
-      setVerseQueue(verseQueue.slice(1));
+      setVerseQueue(prev => {
+        const newQueue = prev.slice(1);
+        return shuffleArray(newQueue);
+      });
     } else {
       setIsLoading(true);
       await fetchNewTeaching();
@@ -62,18 +125,13 @@ const TeachingOfDay = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Carregando...</p>
-      </div>
-    );
+    return <InteractiveLoading />;
   }
   if (!todaysTeaching) {
     return (
       <div className="no-teaching-container">
         <p>Nenhum ensinamento disponível no momento.</p>
-        <button className="btn-primary" onClick={() => fetchNewTeaching()}>
+        <button className="btn-primary" onClick={loadInitialVerses}>
           Tentar Novamente
         </button>
       </div>
