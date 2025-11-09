@@ -31,9 +31,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          npm install --legacy-peer-deps
           echo "Verificando react-scripts..."
-          npm list react-scripts || (echo "react-scripts não encontrado, instalando..." && npm install react-scripts --save)
+          if ! npm list react-scripts > /dev/null 2>&1; then
+            echo "react-scripts não encontrado, instalando..."
+            npm install react-scripts --save-dev --legacy-peer-deps
+          fi
 
       - name: Build
         run: npm run build

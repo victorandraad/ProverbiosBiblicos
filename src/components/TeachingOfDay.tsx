@@ -8,55 +8,55 @@ const SlowDownMessage = ({ onClose }: { onClose: () => void }) => {
   useEffect(() => {
     setTimeout(() => {
       onClose();
-    }, 2500);
+    }, 5000);
     return;
   }, [onClose]);
 
   return (
     <div className="slow-down-message">
       <div className="slow-down-content">
-        <div className="slow-down-icon">⏱️</div>
-        <h3>Devagar, amigo!</h3>
-        <p>Leia com calma. Cada versículo merece sua atenção e reflexão.</p>
-        <p className="slow-down-subtitle">A sabedoria vem com a meditação, não com a pressa.</p>
+        <div className="slow-down-icon">✨</div>
+        <h3>Um momento de reflexão</h3>
+        <p>Permita que esta palavra se estabeleça em seu coração antes de seguir adiante.</p>
+        <p className="slow-down-subtitle">A sabedoria floresce na quietude e na contemplação.</p>
       </div>
     </div>
   );
 };
 
 const InteractiveLoading = () => {
-  const [loadingText, setLoadingText] = useState('Buscando palavra de sabedoria');
+  const [loadingText, setLoadingText] = useState('Preparando uma palavra especial');
   const dotsRef = useRef(0);
 
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       dotsRef.current = (dotsRef.current + 1) % 4;
       const dots = '.'.repeat(dotsRef.current);
-      setLoadingText(`Buscando palavra de sabedoria${dots}`);
-    }, 500);
+      setLoadingText(`Preparando uma palavra especial${dots}`);
+    }, 600);
 
-    return;
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="loading-container interactive-loading">
       <div className="loading-animation">
-        <div className="loading-book">📖</div>
+        <div className="loading-symbol">✞</div>
         <div className="loading-pulse"></div>
       </div>
       <p className="loading-text">{loadingText}</p>
-      <p className="loading-subtitle">Aguarde enquanto buscamos versículos especiais para você...</p>
+      <p className="loading-subtitle">Que esta palavra encontre você no momento certo...</p>
     </div>
   );
 };
 
 const ShareButton = ({ verse, reference, onClose }: { verse: string, reference: string, onClose: () => void }) => {
   const shareMessages = [
-    "💚 Este versículo tocou meu coração e quero compartilhar com você",
-    "✨ Esta palavra de sabedoria chegou na hora certa",
-    "🙏 Uma mensagem que pode abençoar seu dia",
-    "💫 Compartilhando uma palavra que me trouxe paz",
-    "🌟 Este versículo me fez refletir, espero que toque você também"
+    "Esta palavra tocou meu coração e quero compartilhar com você",
+    "Uma mensagem de sabedoria que chegou na hora certa",
+    "Uma palavra que pode abençoar seu dia",
+    "Compartilhando uma mensagem que trouxe paz ao meu coração",
+    "Este versículo me fez refletir profundamente"
   ];
 
   const randomMessage = shareMessages[Math.floor(Math.random() * shareMessages.length)];
@@ -67,19 +67,19 @@ const ShareButton = ({ verse, reference, onClose }: { verse: string, reference: 
   return (
     <div className="share-button-container">
       <div className="share-button-content">
-        <div className="share-heart-icon">💚</div>
-        <p className="share-message">Compartilhe esta palavra e abençoe alguém hoje!</p>
+        <div className="share-heart-icon">✨</div>
+        <p className="share-message">Compartilhe esta palavra e abençoe alguém hoje</p>
         <a 
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="share-whatsapp-btn"
         >
-          <span className="whatsapp-icon">📱</span>
+          <span className="whatsapp-icon">💬</span>
           Compartilhar no WhatsApp
         </a>
         <button className="share-close-btn" onClick={onClose}>
-          Talvez depois
+          Continuar lendo
         </button>
       </div>
     </div>
@@ -229,7 +229,7 @@ const TeachingOfDay = () => {
             onClick={handleNextVerse}
             disabled={verseQueue.length === 0}
           >
-            {verseQueue.length === 0 ? 'Carregar mais versículos' : 'Próximo versículo'}
+            {verseQueue.length === 0 ? 'Buscar mais palavras' : 'Próxima palavra'}
           </button>
           {verseQueue.length > 0 && (
             <div className="verse-queue-indicator">
